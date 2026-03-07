@@ -1,4 +1,4 @@
-# Generated from upstream OpenClaw schema at rev ae96a8191649c5d1d44c6e06f8503015216cd880. DO NOT EDIT.
+# Generated from upstream OpenClaw schema at rev 75981b05c372ae33374c901ddc867efee426e38d. DO NOT EDIT.
 # Generator: nix/scripts/generate-config-options.ts
 { lib }:
 let
@@ -11801,6 +11801,10 @@ in
             default = null;
           };
           supportsStrictMode = lib.mkOption {
+            type = t.nullOr (t.bool);
+            default = null;
+          };
+          supportsTools = lib.mkOption {
             type = t.nullOr (t.bool);
             default = null;
           };
