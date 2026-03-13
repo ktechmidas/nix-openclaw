@@ -1,4 +1,4 @@
-# Generated from upstream OpenClaw schema at rev be8d51c30135146904638dd2c76a36510078081e. DO NOT EDIT.
+# Generated from upstream OpenClaw schema at rev 72b6a11a832b73c9f68db09726e291bbc358fe71. DO NOT EDIT.
 # Generator: nix/scripts/generate-config-options.ts
 { lib }:
 let
@@ -295,6 +295,10 @@ in
       };
       compaction = lib.mkOption {
         type = t.nullOr (t.submodule { options = {
+        customInstructions = lib.mkOption {
+          type = t.nullOr (t.str);
+          default = null;
+        };
         identifierInstructions = lib.mkOption {
           type = t.nullOr (t.str);
           default = null;
