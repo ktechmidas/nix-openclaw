@@ -45,6 +45,20 @@ if [ -d extensions ]; then
   log_step "copy extensions" cp -r extensions "$out/lib/openclaw/"
 fi
 
+# Copy plugin manifests into dist/extensions so the gateway can find them.
+# The build compiles TS→JS into dist/extensions/<name>/ but the manifest
+# (openclaw.plugin.json) only exists in the source extensions/<name>/ dir.
+if [ -d "$out/lib/openclaw/extensions" ] && [ -d "$out/lib/openclaw/dist/extensions" ]; then
+  for manifest in "$out/lib/openclaw/extensions"/*/openclaw.plugin.json; do
+    [ -f "$manifest" ] || continue
+    ext_name="$(basename "$(dirname "$manifest")")"
+    dist_ext="$out/lib/openclaw/dist/extensions/$ext_name"
+    if [ -d "$dist_ext" ] && [ ! -f "$dist_ext/openclaw.plugin.json" ]; then
+      cp "$manifest" "$dist_ext/openclaw.plugin.json"
+    fi
+  done
+fi
+
 if [ -d docs/reference/templates ]; then
   mkdir -p "$out/lib/openclaw/docs/reference"
   log_step "copy reference templates" cp -r docs/reference/templates "$out/lib/openclaw/docs/reference/"
