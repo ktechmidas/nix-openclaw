@@ -16,10 +16,20 @@ export OPENCLAW_LOG_DIR="${TMPDIR}/openclaw-logs"
 mkdir -p "$OPENCLAW_LOG_DIR"
 mkdir -p /tmp/openclaw || true
 chmod 700 /tmp/openclaw || true
-export OPENCLAW_BUNDLED_PLUGINS_DIR="${TMPDIR}/openclaw-empty-extensions"
-mkdir -p "$OPENCLAW_BUNDLED_PLUGINS_DIR"
-export VITEST_POOL="forks"
-export VITEST_MIN_WORKERS="2"
-export VITEST_MAX_WORKERS="2"
+if [ -d "$PWD/dist-runtime/extensions" ]; then
+  export OPENCLAW_BUNDLED_PLUGINS_DIR="$PWD/dist-runtime/extensions"
+else
+  unset OPENCLAW_BUNDLED_PLUGINS_DIR
+fi
+PATH="$PWD/node_modules/.bin:$PATH"
+vitest_cli="$PWD/node_modules/vitest/vitest.mjs"
+if [ ! -f "$vitest_cli" ]; then
+  vitest_cli="$(find "$PWD/node_modules" -path '*/vitest/vitest.mjs' -type f | head -n 1)"
+fi
 
-pnpm vitest run --config vitest.gateway.config.ts --testTimeout=20000
+if [ -z "${vitest_cli:-}" ] || [ ! -f "$vitest_cli" ]; then
+  echo "vitest CLI not found under $PWD/node_modules" >&2
+  exit 1
+fi
+
+exec node "$vitest_cli" run --config vitest.gateway.config.ts --testTimeout=20000

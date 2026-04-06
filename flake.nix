@@ -28,6 +28,7 @@
       overlay = import ./nix/overlay.nix;
       sourceInfoStable = import ./nix/sources/openclaw-source.nix;
       systems = [
+        # Supported outputs for this repo.
         "x86_64-linux"
         "aarch64-darwin"
       ];
