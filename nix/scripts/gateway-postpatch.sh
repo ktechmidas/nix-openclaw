@@ -9,6 +9,15 @@ if [ -n "${PATCH_BUNDLED_RUNTIME_DEPS_SCRIPT:-}" ] && [ -f scripts/stage-bundled
   chmod u+w scripts/stage-bundled-plugin-runtime-deps.mjs
 fi
 
+# Revert preemptive context overflow detection (#29371) — the aggressive
+# post-compaction overflow check inflates context estimates via details fields
+# and triggers false-positive tool-result compaction at low context usage.
+if [ -n "${REVERT_PREEMPTIVE_OVERFLOW_PATCH:-}" ] && [ -f src/agents/pi-embedded-runner/tool-result-context-guard.ts ]; then
+  if grep -q "PREEMPTIVE_OVERFLOW_RATIO" src/agents/pi-embedded-runner/tool-result-context-guard.ts; then
+    patch -p1 < "$REVERT_PREEMPTIVE_OVERFLOW_PATCH"
+  fi
+fi
+
 if [ -f src/logging/logger.ts ]; then
   if ! grep -q "OPENCLAW_LOG_DIR" src/logging/logger.ts; then
     sed -i 's/export const DEFAULT_LOG_DIR = "\/tmp\/openclaw";/export const DEFAULT_LOG_DIR = process.env.OPENCLAW_LOG_DIR ?? "\/tmp\/openclaw";/' src/logging/logger.ts

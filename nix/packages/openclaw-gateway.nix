@@ -58,6 +58,7 @@ let
           NODE_BIN = "${nodejs_22}/bin/node";
           PATCH_CLIPBOARD_SH = "${../scripts/patch-clipboard.sh}";
           PATCH_CLIPBOARD_WRAPPER = "${../scripts/clipboard-wrapper.cjs}";
+          REVERT_PREEMPTIVE_OVERFLOW_PATCH = "${../patches/revert-preemptive-overflow.patch}";
         };
       };
 
