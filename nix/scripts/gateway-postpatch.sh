@@ -18,6 +18,16 @@ if [ -n "${REVERT_PREEMPTIVE_OVERFLOW_PATCH:-}" ] && [ -f src/agents/pi-embedded
   fi
 fi
 
+# Stop counting details field in tool-result char estimates — details is
+# stripped before sending to the model (sanitizeSessionHistory) but was
+# being counted by the context guard, inflating estimates ~10-60x for
+# bash tool results that carry full aggregated command output in details.
+if [ -n "${STRIP_DETAILS_ESTIMATE_PATCH:-}" ] && [ -f src/agents/pi-embedded-runner/tool-result-char-estimator.ts ]; then
+  if grep -q "estimateUnknownChars(details)" src/agents/pi-embedded-runner/tool-result-char-estimator.ts; then
+    patch -p1 < "$STRIP_DETAILS_ESTIMATE_PATCH"
+  fi
+fi
+
 if [ -f src/logging/logger.ts ]; then
   if ! grep -q "OPENCLAW_LOG_DIR" src/logging/logger.ts; then
     sed -i 's/export const DEFAULT_LOG_DIR = "\/tmp\/openclaw";/export const DEFAULT_LOG_DIR = process.env.OPENCLAW_LOG_DIR ?? "\/tmp\/openclaw";/' src/logging/logger.ts
